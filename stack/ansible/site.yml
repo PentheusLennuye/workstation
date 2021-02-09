@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: true
+  tasks:
+    - become: yes
+      include: workstation/packages.yml
+    - become: yes
+      include: workstation/services.yml
+    - include: workstation/user_config.yml

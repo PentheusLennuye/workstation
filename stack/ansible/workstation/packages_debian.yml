@@ -1,0 +1,30 @@
+---
+- name: remove vim-tiny
+  apt:
+    name: vim-tiny
+    state: absent
+
+- name: install packages
+  apt:
+    name: "{{ item }}"
+  loop:
+    - curl
+    - fonts-powerline
+    - git
+    - openssh-server
+    - rsync
+    - vim
+    - wget
+    - zsh
+    - fcitx
+    - fcitx-mocz
+    - kde-config-fcitx
+    - build-essentials
+    - kdevelop
+    - cmake
+    - cmake++
+
+
+- name: download atom
+  apt:
+    deb: https://atom.io/download/deb

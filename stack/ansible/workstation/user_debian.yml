@@ -1,0 +1,10 @@
+---
+- name: Set my favourite user groups and shell
+  become: yes
+  user:
+    name: "{{ whoami }}"
+    groups:
+      - adm
+      - sudo
+    append: yes
+    shell: /usr/bin/zsh

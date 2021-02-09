@@ -1,0 +1,10 @@
+---
+- name: install packages
+  yum:
+    name: "{{ item }}"
+  loop:
+    - vim
+    - zsh
+    - git
+    - wget
+    - rsync

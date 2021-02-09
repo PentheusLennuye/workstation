@@ -1,0 +1,5 @@
+[user]
+	name = George Cummings
+	email = g.cummings@sap.com
+[credential]
+	helper = store --file ~/.gitcreds

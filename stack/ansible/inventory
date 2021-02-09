@@ -1,0 +1,7 @@
+[workstations]
+localhost whoami=gmc
+
+
+[workstations:vars]
+ohmyzsh_url=https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+  

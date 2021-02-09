@@ -1,0 +1,86 @@
+---
+- include_tasks: "user_{{ ansible_os_family|lower}}.yml"
+
+- name: Create ansible and vimrc directories
+  file:
+    path: "{{ ansible_user_dir }}/{{ item }}"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  loop: ['.ansible', '.ansible/tmp', '.vim', '.vim/autoload', '.vim/bundle']
+
+# Utilities ---------------
+- name: Install oh-my-zsh
+  shell: |
+    sh -c "$(curl -fsSL {{ ohmyzsh_url }})" \
+          "" \
+          --unattended
+  become_user: "{{ ansible_user_id }}"
+  args:
+    creates: "{{ ansible_user_dir }}/.oh-my-zsh"
+
+- name: Install vim pathogen
+  get_url:
+    url: https://tpo.pe/pathogen.vim
+    dest: "{{ ansible_user_dir }}/.vim/autoload/pathogen.vim"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    force: no
+
+- name: Install vim flake-8
+  git:
+    repo: "https://github.com/{{ item.repo }}"
+    dest: "{{ ansible_user_dir }}/.vim/bundle/{{ item.dest }}"
+  loop:
+    - { repo: 'nvie/vim-flake8.git', dest: 'vim-flake8'}
+    - { repo: 'vim-syntastic/syntastic.git', dest: 'syntastic'}
+    - { repo: 'altercation/vim-colors-solarized.git',
+        dest: 'vim-colors-solarized'}
+    - { repo: 'plasticboy/vim-markdown.git', dest: 'vim-markdown'}
+  become: yes
+  become_user: "{{ ansible_user_id }}"
+
+# Configuration --------------
+- name: Configure zshrc and vimrc
+  copy:
+    src: "files/{{ item }}"
+    dest: "{{ ansible_user_dir }}/.{{ item }}"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  loop: ['zshrc', 'vimrc']
+
+- name: ensure ~/.kde/share/apps/konsole is a directory
+  file:
+    state: directory
+    path: "{{ ansible_user_dir}}/.kde/share/apps/konsole"
+    mode: '0755'
+
+- name: Download solarized colours
+  git:
+    repo: https://github.com/phiggins/konsole-colors-solarized.git
+    dest: "{{ ansible_user_dir }}/Downloads/konsole-colors-solarized"
+
+- name: install solarized to konsole
+  copy:
+    src: "{{ ansible_user_dir }}/Downloads/konsole-colors-solarized/{{ item }}"
+    dest: "{{ ansible_user_dir }}/.kde/share/apps/konsole/{{ item }}"
+  loop:
+    - "Solarized Dark.colorscheme"
+    - "Solarized Light.colorscheme"
+
+- name: ensure konsole profile directory exists
+  file:
+    state: directory
+    path: "{{ ansible_user_dir }}/.local/share/konsole"
+    mode: '0700'
+
+- name: Favourite konsole profile is set
+  copy:
+    src: files/GeorgeProfile.profile
+    dest: "{{ ansible_user_dir }}/.local/share/konsole"
+
+- name: Favourite konsole rc is set
+  copy:
+    src: files/konsolerc
+    dest: "{{ ansible_user_dir }}/.config/konsolerc"
+    mode: '0600'
