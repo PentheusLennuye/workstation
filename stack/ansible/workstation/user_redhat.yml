@@ -1,0 +1,14 @@
+---
+- name: Ensure needed groups are set
+  become: yes
+  ansible.builtin.group:
+    name: docker
+- name: Set my favourite user groups and shell
+  become: yes
+  user:
+    name: "{{ whoami }}"
+    groups:
+      - libvirt
+      - docker
+    append: yes
+    shell: /usr/bin/zsh
